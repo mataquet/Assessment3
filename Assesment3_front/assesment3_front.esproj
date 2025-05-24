@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.2191419">
+﻿<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.2191419">
   <PropertyGroup>
     <StartupCommand>npm run dev</StartupCommand>
     <JavaScriptTestRoot>src\</JavaScriptTestRoot>
@@ -9,6 +9,12 @@
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="src\App.tsx" />
+    <None Remove="src\components\auth\NewFile.txt" />
+    <None Remove="src\components\hub\NewFile.txt" />
+    <None Remove="src\components\NewFile.txt" />
+    <None Remove="src\components\trips\NewFile.txt" />
+    <None Remove="src\context\NewFile.txt" />
+    <None Remove="src\services\NewFile.txt" />
+    <None Remove="src\services\tripService" />
   </ItemGroup>
 </Project>

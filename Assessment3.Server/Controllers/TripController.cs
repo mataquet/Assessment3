@@ -48,7 +48,7 @@ namespace Assessment3.Server.Controllers
         }
 
         [Authorize]
-        [HttpPost("modify")]
+        [HttpPost("{id}")]
         public async Task<IActionResult> ModifyTrip([FromBody] TripPayload tripChange, int id)
         {
             await using var transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
@@ -110,8 +110,8 @@ namespace Assessment3.Server.Controllers
 
         }
 
-        [HttpDelete("delete")]
         [Authorize]
+        [HttpDelete("delete/{id}")]
         public async Task<ActionResult> DeleteTrip(int id)
         {
             var usernameClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
@@ -134,8 +134,8 @@ namespace Assessment3.Server.Controllers
             return Ok();
         }
 
-        [HttpGet("gettrips")]
         [Authorize]
+        [HttpGet]
         public async Task<IActionResult> GetTrips()
         {
             var usernameClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
@@ -148,16 +148,19 @@ namespace Assessment3.Server.Controllers
             return Ok(trips);
         }
 
-        [HttpPost("join")]
         [Authorize]
+        [HttpPut("{id}/join")]
         public async Task<IActionResult> Join(int id)
         {
             var usernameClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
+            Console.WriteLine("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
             if (usernameClaim == null)
             {
                 return Unauthorized();
             }
             var username = usernameClaim.Value;
+
+            Console.WriteLine("TEstteststeedst"+username);
             var trip = await _context.Trips.FirstOrDefaultAsync(t => t.Id == id);
             if (trip == null)
             {
@@ -173,8 +176,8 @@ namespace Assessment3.Server.Controllers
             return Ok("You are now registered in the trip !");
         }
 
-        [HttpPost("leave")]
         [Authorize]
+        [HttpPut("{id}/leave")]
         public async Task<IActionResult> Leave(int id)
         {
             var usernameClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
@@ -197,9 +200,9 @@ namespace Assessment3.Server.Controllers
             return Ok("You left the trip.");
         }
 
-        [HttpPost("addOwner")]
         [Authorize]
-        public async Task<IActionResult> AddOwner(int ownerId, int tripId)
+        [HttpPost("addOwner/{tripId}")]
+        public async Task<IActionResult> AddOwner(int tripId, string ownerId)
         {
             var usernameClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
             if (usernameClaim == null)
@@ -216,22 +219,17 @@ namespace Assessment3.Server.Controllers
             {
                 return Forbid("You are not the owner of this trip");
             }
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == ownerId);
-            if (user == null)
-            {
-                return NotFound("User not found");
-            }
-            if (trip.owners.Contains(user.Login))
+            if (trip.owners.Contains(ownerId))
             {
                 return BadRequest("User is already an owner of this trip");
             }
-            trip.owners.Add(user.Login);
+            trip.owners.Add(ownerId);
             await _context.SaveChangesAsync();
             return Ok("User is now an owner of this trip");
         }
 
-        [HttpGet("details/{id}")]
         [Authorize]
+        [HttpGet("details/{id}")]
         public async Task<IActionResult> TripDetails (int id)
         {
             var usernameClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);

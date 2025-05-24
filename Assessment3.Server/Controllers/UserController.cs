@@ -24,7 +24,7 @@ namespace Assessment3.Server.Controllers
         {
 
 
-            if (await _context.Users.AnyAsync(u => u.Email == userPayload.Email || u.Login == userPayload.Login))
+            if (await _context.Users.AnyAsync(u => u.Email == userPayload.Email || u.Username == userPayload.Username))
             {
                 return BadRequest("User already exists");
             }
@@ -33,7 +33,7 @@ namespace Assessment3.Server.Controllers
             {
                 var user = new User
                 {
-                    Login = userPayload.Login,
+                    Username = userPayload.Username,
                     FirstName = userPayload.FirstName,
                     LastName = userPayload.LastName,
                     HashedPassword = BCrypt.Net.BCrypt.HashPassword(userPayload.Password),
@@ -48,13 +48,13 @@ namespace Assessment3.Server.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] UserLogin userLogin)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == userLogin.Login);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == userLogin.Username);
             if (user == null || !BCrypt.Net.BCrypt.Verify(userLogin.Password, user.HashedPassword))
             {
                 return Unauthorized("Invalid credentials");
             }
             var token = _jwtservice.GenerateToken(user);
-            return Ok(token);
+            return Ok(new { Token = token });
         }
 
     }
