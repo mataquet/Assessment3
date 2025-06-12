@@ -93,7 +93,8 @@ namespace Assessment3.Server.Controllers
                 trip.Price = tripChange.Price;
                 trip.Image = tripChange.Image;
 
-                await _context.SaveChangesAsync();
+                var result = await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
